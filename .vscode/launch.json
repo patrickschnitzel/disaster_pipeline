@@ -1,0 +1,36 @@
+{
+    "name": "Python",
+    "type": "python",
+    "python": "${config.python.pythonPath}",
+    "request": "launch",
+    "stopOnEntry": true,
+    "console": "internalConsole",
+    "program": "${file}",
+    "cwd": "${workspaceRoot}",
+    "debugOptions": [
+        "WaitOnAbnormalExit",
+        "WaitOnNormalExit",
+        "RedirectOutput"
+    ],
+    "env": {
+        "name": "datascienece"
+    },
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "ETL step",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/data/process_data.py",
+            "args": ["data/disaster_messages.csv",
+                 "data/disaster_categories.csv", "data/DisasterResponse.db"],
+            "console": "integratedTerminal"
+        }
+    ]
+}
