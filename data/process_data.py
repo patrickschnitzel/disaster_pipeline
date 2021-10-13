@@ -55,7 +55,16 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     -------
         Cleaned DataFrame ``df``
     """
-    return df.drop_duplicates()
+    # drop duplicates
+    df.drop_duplicates(inplace=True)
+    # lets remove all rows that do not contain 0 or 1 as an entry since this is binary calssifaction
+    # we drop because all other values can be interpretet as label errors. In real world scenario it would ofc
+    # be helpful to ask the person doing the labeling and not just assume an error
+    labels = df.iloc[:,4:]
+    invalid_row_ids = labels[~labels.isin([0,1]).all(axis=1)].index
+    df.drop(invalid_row_ids,inplace=True)
+    
+    return df
 
 def save_data(df: pd.DataFrame, database_filename: str):
     """
