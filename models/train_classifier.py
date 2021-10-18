@@ -2,6 +2,7 @@ import sys
 import pickle
 import re
 from typing import List
+from typing import Tuple
 import pandas as pd
 from sqlalchemy import create_engine
 
@@ -19,7 +20,7 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
 
-def load_data(database_filepath: str):
+def load_data(database_filepath: str) -> Tuple[pd.Series, pd.DataFrame, List[str]]:
     """
     Loads data from SQL database into DataFrame
 
@@ -73,7 +74,7 @@ def tokenize(text: str) -> List[str]:
 
 def build_model() -> GridSearchCV:
     """
-    builds the model. best model was extensively researched in the ML Pipeline Preparation notebook
+    builds the model. best model was extensively researched in the ML Pipeline Preparation notebook.
     
     Returns
     -------
@@ -91,7 +92,7 @@ def build_model() -> GridSearchCV:
     return GridSearchCV(pipeline_linear_svc, param_grid=parameters, scoring="f1_micro" )
 
 
-def evaluate_model(model, X_test, Y_test, category_names):
+def evaluate_model(model: GridSearchCV, X_test: pd.Series, Y_test: pd.DataFrame, category_names: List[str]):
     """
     prints the classification report including relevant model metrics
     
@@ -110,7 +111,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
     print(classification_report(Y_test, y_pred_test,target_names = category_names))
 
 
-def save_model(model, model_filepath):
+def save_model(model: GridSearchCV, model_filepath: str):
     """
     saves model to a pickle file
     
