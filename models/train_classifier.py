@@ -6,7 +6,6 @@ from typing import Tuple
 import pandas as pd
 from sqlalchemy import create_engine
 
-from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
@@ -72,7 +71,7 @@ def tokenize(text: str) -> List[str]:
     return clean_tokens
 
 
-def build_model() -> GridSearchCV:
+def build_model() -> Pipeline:
     """
     builds the model. best model was extensively researched in the ML Pipeline Preparation notebook.
     
@@ -80,19 +79,15 @@ def build_model() -> GridSearchCV:
     -------
         model
     """
-    pipeline_linear_svc = Pipeline([('vect', CountVectorizer()),
-                        ('tfidf', TfidfTransformer()),
-                        ('clf', OneVsRestClassifier(LinearSVC(random_state=0)))])
-    parameters = {
-        #'vect__max_df': (0.5, 0.75, 1.0),
-        #'vect__ngram_range': ((1, 1), (1,2)),
-        #'vect__max_features': (None, 5000,10000),
-        #'tfidf__use_idf': (True, False)
-    }
-    return GridSearchCV(pipeline_linear_svc, param_grid=parameters, scoring="f1_micro" )
+    pipeline_linear_svc = Pipeline([
+                    ('vect', CountVectorizer(max_df=0.5, ngram_range= (1,2), max_features=None)),
+                    ('tfidf', TfidfTransformer(use_idf=False)),
+                    ('clf', OneVsRestClassifier(LinearSVC(random_state=0)))])
+
+    return pipeline_linear_svc
 
 
-def evaluate_model(model: GridSearchCV, X_test: pd.Series, Y_test: pd.DataFrame, category_names: List[str]):
+def evaluate_model(model: Pipeline, X_test: pd.Series, Y_test: pd.DataFrame, category_names: List[str]):
     """
     prints the classification report including relevant model metrics
     
@@ -111,7 +106,7 @@ def evaluate_model(model: GridSearchCV, X_test: pd.Series, Y_test: pd.DataFrame,
     print(classification_report(Y_test, y_pred_test,target_names = category_names))
 
 
-def save_model(model: GridSearchCV, model_filepath: str):
+def save_model(model: Pipeline, model_filepath: str):
     """
     saves model to a pickle file
     
