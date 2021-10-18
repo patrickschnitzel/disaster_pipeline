@@ -37,7 +37,16 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/models/train_classifier.py",
-            "args": ["data/DisasterResponse.db", "classifier.pkl"],
+            "args": ["data/DisasterResponse.db", "models/classifier.pkl"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Run webapp",
+            "type": "python",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/app/",
+            "program": "run.py",
+            "args": ["..data/DisasterResponse.db", "..models/classifier.pkl"],
             "console": "integratedTerminal"
         }
     ]
