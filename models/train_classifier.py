@@ -1,4 +1,5 @@
 import sys
+import pickle
 import re
 from typing import List
 import pandas as pd
@@ -10,6 +11,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.svm import LinearSVC
+from sklearn.metrics import classification_report
 
 import nltk
 nltk.download(['punkt', 'wordnet', 'averaged_perceptron_tagger'])
@@ -19,7 +21,7 @@ from nltk.stem import WordNetLemmatizer
 
 def load_data(database_filepath: str):
     """
-    Loads data from SQL database DataFrame
+    Loads data from SQL database into DataFrame
 
     Parameters
     ----------
@@ -27,9 +29,14 @@ def load_data(database_filepath: str):
         path to sql database
     Returns
     -------
-        X,Y,column names
+        X
+            features
+        Y
+            labels
+        y.names
+            list of categorical column names
     """
-    engine = create_engine('sqlite://' + database_filepath)
+    engine = create_engine('sqlite:///' + database_filepath)
     df = pd.read_sql('DisasterResponseData',con=engine)
     X = df["message"]
     y = df.iloc[:,4:]
@@ -65,24 +72,56 @@ def tokenize(text: str) -> List[str]:
 
 
 def build_model() -> GridSearchCV:
+    """
+    builds the model. best model was extensively researched in the ML Pipeline Preparation notebook
+    
+    Returns
+    -------
+        model
+    """
     pipeline_linear_svc = Pipeline([('vect', CountVectorizer()),
                         ('tfidf', TfidfTransformer()),
                         ('clf', OneVsRestClassifier(LinearSVC(random_state=0)))])
     parameters = {
-        'vect__max_df': (0.5, 0.75, 1.0),
-        'vect__ngram_range': ((1, 1), (1,2)),
-        'vect__max_features': (None, 5000,10000),
-        'tfidf__use_idf': (True, False)
+        #'vect__max_df': (0.5, 0.75, 1.0),
+        #'vect__ngram_range': ((1, 1), (1,2)),
+        #'vect__max_features': (None, 5000,10000),
+        #'tfidf__use_idf': (True, False)
     }
     return GridSearchCV(pipeline_linear_svc, param_grid=parameters, scoring="f1_micro" )
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
-    pass
+    """
+    prints the classification report including relevant model metrics
+    
+    Parameters
+    ----------
+    model
+        model to evaluate
+    X_test
+        test data
+    Y_test
+        test labels
+    category_names
+        names of categories
+    """
+    y_pred_test = model.predict(X_test)
+    print(classification_report(Y_test, y_pred_test,target_names = category_names))
 
 
 def save_model(model, model_filepath):
-    pass
+    """
+    saves model to a pickle file
+    
+    Parameters
+    ----------
+    model
+        model to save
+    model_filepath
+        path to save model
+    """
+    pickle.dump(model, open(model_filepath, 'wb'))
 
 
 def main():

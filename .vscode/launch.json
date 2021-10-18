@@ -31,6 +31,14 @@
             "args": ["data/disaster_messages.csv",
                  "data/disaster_categories.csv", "data/DisasterResponse.db"],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Train step",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/models/train_classifier.py",
+            "args": ["data/DisasterResponse.db", "classifier.pkl"],
+            "console": "integratedTerminal"
         }
     ]
 }
