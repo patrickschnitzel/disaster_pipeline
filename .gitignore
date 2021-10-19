@@ -1,2 +1,4 @@
 *.db
-*.DS_STORE 
+*.DS_STORE
+*.pyc
+*.pickl
